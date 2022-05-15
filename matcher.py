@@ -122,7 +122,7 @@ def predict(input_path, output_path, config,
             lm='distilbert',
             max_len=256,
             dk_injector=None,
-            threshold=None):
+            threshold=None,name_1='lalala'):
     """Run the model over the input file containing the candidate entry pairs
 
     Args:
@@ -161,6 +161,12 @@ def predict(input_path, output_path, config,
 
     # input_path can also be train/valid/test.txt
     # convert to jsonlines
+
+    #the ground_truth that will be compared to the predictions
+    ground_truth=[int(line.split('\t')[:3][-1][0]) for line in open(input_path)]
+
+
+
     if '.txt' in input_path:
         with jsonlines.open(input_path + '.jsonl', mode='w') as writer:
             for line in open(input_path):
@@ -184,6 +190,11 @@ def predict(input_path, output_path, config,
         if len(pairs) > 0:
             process_batch(rows, pairs, writer)
 
+
+    out_preds=[dict_['match'] for dict_ in jsonlines.open(output_path)]
+    real_f1 = sklearn.metrics.f1_score(ground_truth, out_preds)
+    print("The F1 score that our model predicted in the "+input_path+" =", real_f1)
+    
     run_time = time.time() - start_time
     run_tag = '%s_lm=%s_dk=%s_su=%s' % (config['name'], lm, str(dk_injector != None), str(summarizer != None))
     os.system('echo %s %f >> log.txt' % (run_tag, run_time))
@@ -333,4 +344,6 @@ if __name__ == "__main__":
             max_len=hp.max_len,
             lm=hp.lm,
             dk_injector=dk_injector,
-            threshold=threshold)
+            threshold=threshold,name_1=hp.input_path)
+
+    
