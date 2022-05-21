@@ -31,6 +31,7 @@ if __name__=="__main__":
     parser.add_argument("--dk", type=str, default=None)
     parser.add_argument("--summarize", dest="summarize", action="store_true")
     parser.add_argument("--size", type=int, default=None)
+    parser.add_argument("--neural", type=str, default='linear')
 
     hp = parser.parse_args()
 
@@ -46,8 +47,8 @@ if __name__=="__main__":
     task = hp.task
 
     # create the tag of the run
-    run_tag = '%s_lm=%s_da=%s_dk=%s_su=%s_size=%s_id=%d' % (task, hp.lm, hp.da,
-            hp.dk, hp.summarize, str(hp.size), hp.run_id)
+    run_tag = '%s_lm=%s_da=%s_dk=%s_su=%s_size=%s_neural=%s_id=%d' % (task, hp.lm, hp.da,
+            hp.dk, hp.summarize, str(hp.size),hp.neural, hp.run_id)
     run_tag = run_tag.replace('/', '_')
 
     # load task configuration
