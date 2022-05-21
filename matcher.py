@@ -12,6 +12,7 @@ import argparse
 import sys
 import sklearn
 import traceback
+import pandas as pd
 
 from torch.utils import data
 from tqdm import tqdm
@@ -122,7 +123,7 @@ def predict(input_path, output_path, config,
             lm='distilbert',
             max_len=256,
             dk_injector=None,
-            threshold=None,name_1='lalala'):
+            threshold=None):
     """Run the model over the input file containing the candidate entry pairs
 
     Args:
@@ -161,12 +162,6 @@ def predict(input_path, output_path, config,
 
     # input_path can also be train/valid/test.txt
     # convert to jsonlines
-
-    #the ground_truth that will be compared to the predictions
-    ground_truth=[int(line.split('\t')[:3][-1][0]) for line in open(input_path)]
-
-
-
     if '.txt' in input_path:
         with jsonlines.open(input_path + '.jsonl', mode='w') as writer:
             for line in open(input_path):
@@ -190,11 +185,6 @@ def predict(input_path, output_path, config,
         if len(pairs) > 0:
             process_batch(rows, pairs, writer)
 
-
-    out_preds=[dict_['match'] for dict_ in jsonlines.open(output_path)]
-    real_f1 = sklearn.metrics.f1_score(ground_truth, out_preds)
-    print("The F1 score that our model predicted in the "+input_path+" =", real_f1)
-    
     run_time = time.time() - start_time
     run_tag = '%s_lm=%s_dk=%s_su=%s' % (config['name'], lm, str(dk_injector != None), str(summarizer != None))
     os.system('echo %s %f >> log.txt' % (run_tag, run_time))
@@ -318,6 +308,7 @@ if __name__ == "__main__":
     parser.add_argument("--dk", type=str, default=None)
     parser.add_argument("--summarize", dest="summarize", action="store_true")
     parser.add_argument("--max_len", type=int, default=256)
+    parser.add_argument("--neural", type=str, default='linear')
     hp = parser.parse_args()
 
     # load the models
@@ -338,12 +329,32 @@ if __name__ == "__main__":
     # tune threshold
     threshold = tune_threshold(config, model, hp)
 
+    print ('The new threshold is : ',threshold,'\n')
     # run prediction
     predict(hp.input_path, hp.output_path, config, model,
             summarizer=summarizer,
             max_len=hp.max_len,
             lm=hp.lm,
             dk_injector=dk_injector,
-            threshold=threshold,name_1=hp.input_path)
+            threshold=threshold)
+    
+    predicts = []
+    with jsonlines.open(hp.output_path, mode="r") as reader:
+        for line in reader:
+            predicts.append(int(line['match']))
+    os.system("rm "+ hp.output_path)
 
+    labels = []
+    with open(hp.input_path) as fin:
+        for line in fin:
+            labels.append(int(line.split('\t')[-1]))
+
+    real_f1 = sklearn.metrics.f1_score(labels, predicts)
+    print("test_f1 is  =", real_f1)
+
+    file_excel='F1_SCORES.xlsx'
+    df=pd.read_excel(file_excel)
+    df2={'Model_Architecture':hp.neural,'Model_Name':hp.task,'F1_Testset': round(real_f1, 4)} 
+    df = df.append(df2, ignore_index = True)
+    df.to_excel(file_excel,index=False)  
     
