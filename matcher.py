@@ -312,7 +312,7 @@ def load_model(task, path, lm, use_gpu, fp16=True):
     elif hp.neural=='lstm':
         model = DittoModel_lstm(device=device, lm=lm)
     else:
-        raise ValueError("Wrong model architecture.\nInsert neural parameter one of the following:\n1: linear\n2: cls_sep\n3: cls_sep_gru\n4: gru\n5:lstm")
+        raise ValueError("Wrong model architecture.\nInsert neural parameter one of the following:\n1: linear\n2: cls_sep\n3: cls_sep_gru\n4: gru\n5: lstm")
 
     saved_state = torch.load(checkpoint, map_location=lambda storage, loc: storage)
     model.load_state_dict(saved_state['model'])
@@ -340,6 +340,7 @@ if __name__ == "__main__":
     parser.add_argument("--output_path", type=str, default='output/matched_small.jsonl')
     parser.add_argument("--lm", type=str, default='distilbert')
     parser.add_argument("--use_gpu", dest="use_gpu", action="store_true")
+    parser.add_argument("--da", type=str, default=None)
     parser.add_argument("--fp16", dest="fp16", action="store_true")
     parser.add_argument("--checkpoint_path", type=str, default='checkpoints/')
     parser.add_argument("--dk", type=str, default=None)

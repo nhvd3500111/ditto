@@ -118,5 +118,5 @@ if __name__=="__main__":
           test_dataset,
           run_tag, hp)
     else:
-        raise ValueError("Wrong model architecture.\nInsert neural parameter one of the following:\n1: linear\n2: cls_sep\n3: cls_sep_gru\n4: gru\n5:lstm")
+        raise ValueError("Wrong model architecture.\nInsert neural parameter one of the following:\n1: linear\n2: cls_sep\n3: cls_sep_gru\n4: gru\n5: lstm")
     
