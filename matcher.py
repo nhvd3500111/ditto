@@ -303,13 +303,13 @@ def load_model(task, path, lm, use_gpu, fp16=True):
 
     if hp.neural=='linear':
         model = DittoModel_original(device=device, lm=lm)
-    elif hp.model=='cls_sep':
+    elif hp.neural=='cls_sep':
         model = DittoModel_cls_sep(device=device, lm=lm)
-    elif hp.model=='cls_sep_gru':
+    elif hp.neural=='cls_sep_gru':
         model = DittoModel_cls_sep_gru(device=device, lm=lm)
-    elif hp.model=='gru':
+    elif hp.neural=='gru':
         model = DittoModel_gru(device=device, lm=lm)
-    elif hp.model=='lstm':
+    elif hp.neural=='lstm':
         model = DittoModel_lstm(device=device, lm=lm)
     else:
         raise ValueError("Wrong model architecture.\nInsert neural parameter one of the following:\n1: linear\n2: cls_sep\n3: cls_sep_gru\n4: gru\n5:lstm")

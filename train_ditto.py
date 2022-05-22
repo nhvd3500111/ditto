@@ -97,22 +97,22 @@ if __name__=="__main__":
           valid_dataset,
           test_dataset,
           run_tag, hp)
-    elif hp.model=='cls_sep':
+    elif hp.neural=='cls_sep':
         train_cls_sep(train_dataset,
           valid_dataset,
           test_dataset,
           run_tag, hp)
-    elif hp.model=='cls_sep_gru':
+    elif hp.neural=='cls_sep_gru':
         train_cls_sep_gru(train_dataset,
           valid_dataset,
           test_dataset,
           run_tag, hp)
-    elif hp.model=='gru':
+    elif hp.neural=='gru':
         train_gru(train_dataset,
           valid_dataset,
           test_dataset,
           run_tag, hp)
-    elif hp.model=='lstm':
+    elif hp.neural=='lstm':
         train_lstm(train_dataset,
           valid_dataset,
           test_dataset,
