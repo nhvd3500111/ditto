@@ -19,7 +19,15 @@ from tqdm import tqdm
 from apex import amp
 from scipy.special import softmax
 
-from ditto_light.ditto import evaluate, DittoModel
+#this function is the same for all 5 different Ditto architectures
+from ditto_light.ditto_original import evaluate
+
+from ditto_light.ditto_original import DittoModel as DittoModel_original
+from ditto_light.ditto_cls_sep import DittoModel as DittoModel_cls_sep
+from ditto_light.ditto_cls_sep_gru import DittoModel as DittoModel_cls_sep_gru
+from ditto_light.ditto_gru import DittoModel as DittoModel_gru
+from ditto_light.ditto_lstm import DittoModel as DittoModel_lstm
+
 from ditto_light.exceptions import ModelNotFoundError
 from ditto_light.dataset import DittoDataset
 from ditto_light.summarize import Summarizer
@@ -130,7 +138,7 @@ def predict(input_path, output_path, config,
         input_path (str): the input file path
         output_path (str): the output file path
         config (Dictionary): task configuration
-        model (DittoModel): the model for prediction
+        model (DittoModel): the model for prediction, depending on the desirable architecture of the user
         batch_size (int): the batch size
         summarizer (Summarizer, optional): the summarization module
         max_len (int, optional): the max sequence length
@@ -189,6 +197,26 @@ def predict(input_path, output_path, config,
     run_tag = '%s_lm=%s_dk=%s_su=%s' % (config['name'], lm, str(dk_injector != None), str(summarizer != None))
     os.system('echo %s %f >> log.txt' % (run_tag, run_time))
 
+def run_prediction(input_path,output_path,config,model,summarizer,max_len,lm,dk_injector,threshold):
+        predict(input_path, output_path, config, model,
+            summarizer=summarizer,
+            max_len=max_len,
+            lm=lm,
+            dk_injector=dk_injector,
+            threshold=threshold)
+    
+        predicts = []
+        with jsonlines.open(output_path, mode="r") as reader:
+            for line in reader:
+                predicts.append(int(line['match']))
+        os.system("rm "+ output_path)
+
+        labels = []
+        with open(input_path) as fin:
+            for line in fin:
+                labels.append(int(line.split('\t')[-1]))
+
+        return sklearn.metrics.f1_score(labels, predicts)
 
 def tune_threshold(config, model, hp):
     """Tune the prediction threshold for a given model on a validation set"""
@@ -229,25 +257,14 @@ def tune_threshold(config, model, hp):
 
     # verify F1
     set_seed(123)
-    predict(validset, "tmp.jsonl", config, model,
+
+    real_f1= run_prediction(validset, "tmp.jsonl", config, model,
             summarizer=summarizer,
             max_len=hp.max_len,
             lm=hp.lm,
             dk_injector=injector,
             threshold=th)
 
-    predicts = []
-    with jsonlines.open("tmp.jsonl", mode="r") as reader:
-        for line in reader:
-            predicts.append(int(line['match']))
-    os.system("rm tmp.jsonl")
-
-    labels = []
-    with open(validset) as fin:
-        for line in fin:
-            labels.append(int(line.split('\t')[-1]))
-
-    real_f1 = sklearn.metrics.f1_score(labels, predicts)
     print("load_f1 =", f1)
     print("real_f1 =", real_f1)
 
@@ -284,7 +301,18 @@ def load_model(task, path, lm, use_gpu, fp16=True):
     else:
         device = 'cpu'
 
-    model = DittoModel(device=device, lm=lm)
+    if hp.neural=='linear':
+        model = DittoModel_original(device=device, lm=lm)
+    elif hp.model=='cls_sep':
+        model = DittoModel_cls_sep(device=device, lm=lm)
+    elif hp.model=='cls_sep_gru':
+        model = DittoModel_cls_sep_gru(device=device, lm=lm)
+    elif hp.model=='gru':
+        model = DittoModel_gru(device=device, lm=lm)
+    elif hp.model=='lstm':
+        model = DittoModel_lstm(device=device, lm=lm)
+    else:
+        raise ValueError("Wrong model architecture.\nInsert neural parameter one of the following:\n1: linear\n2: cls_sep\n3: cls_sep_gru\n4: gru\n5:lstm")
 
     saved_state = torch.load(checkpoint, map_location=lambda storage, loc: storage)
     model.load_state_dict(saved_state['model'])
@@ -295,6 +323,15 @@ def load_model(task, path, lm, use_gpu, fp16=True):
 
     return config, model
 
+def update_excel(file_excel):
+        #hp, real_f1 will be  global variables so no need to feed them to the function
+        df=pd.read_excel(file_excel)
+        #We store the basic architecture of the matcher in a dataframe, as well as the results in the test dataset,
+        #in order to update our excel file where we keep track of the results
+        df2={'Model_Architecture':hp.neural,'Model_Name':hp.task,'F1_Testset': round(real_f1, 4),
+        'Optimizations':'da: '+str(hp.da)+' - dk: '+str(hp.dk)+' - summarize: '+str(hp.summarize)} 
+        df = df.append(df2, ignore_index = True)
+        df.to_excel(file_excel,index=False)  
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -309,6 +346,7 @@ if __name__ == "__main__":
     parser.add_argument("--summarize", dest="summarize", action="store_true")
     parser.add_argument("--max_len", type=int, default=256)
     parser.add_argument("--neural", type=str, default='linear')
+    parser.add_argument("--file_excel", type=str, default='F1_SCORES.xlsx')
     hp = parser.parse_args()
 
     # load the models
@@ -331,30 +369,21 @@ if __name__ == "__main__":
 
     print ('The new threshold is : ',threshold,'\n')
     # run prediction
-    predict(hp.input_path, hp.output_path, config, model,
+    real_f1 = run_prediction(hp.input_path, hp.output_path, config, model,
             summarizer=summarizer,
             max_len=hp.max_len,
             lm=hp.lm,
             dk_injector=dk_injector,
             threshold=threshold)
-    
-    predicts = []
-    with jsonlines.open(hp.output_path, mode="r") as reader:
-        for line in reader:
-            predicts.append(int(line['match']))
-    os.system("rm "+ hp.output_path)
-
-    labels = []
-    with open(hp.input_path) as fin:
-        for line in fin:
-            labels.append(int(line.split('\t')[-1]))
-
-    real_f1 = sklearn.metrics.f1_score(labels, predicts)
     print("test_f1 is  =", real_f1)
 
-    file_excel='F1_SCORES.xlsx'
-    df=pd.read_excel(file_excel)
-    df2={'Model_Architecture':hp.neural,'Model_Name':hp.task,'F1_Testset': round(real_f1, 4)} 
-    df = df.append(df2, ignore_index = True)
-    df.to_excel(file_excel,index=False)  
+    #We store the basic architecture of the matcher in a dataframe, as well as the results in the test dataset,
+    #in order to update our excel file where we keep track of the results
+    file_excel=hp.file_excel
+    update_excel(file_excel)
+    
+    
+
+    
+
     

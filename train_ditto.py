@@ -11,7 +11,12 @@ sys.path.insert(0, "Snippext_public")
 from ditto_light.dataset import DittoDataset
 from ditto_light.summarize import Summarizer
 from ditto_light.knowledge import *
-from ditto_light.ditto import train
+
+from ditto_light.ditto_original import train as train_original
+from ditto_light.ditto_cls_sep import train as train_cls_sep
+from ditto_light.ditto_cls_sep_gru import train as train_cls_sep_gru
+from ditto_light.ditto_gru import train as train_gru
+from ditto_light.ditto_lstm import train as train_lstm
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
@@ -87,7 +92,31 @@ if __name__=="__main__":
     test_dataset = DittoDataset(testset, lm=hp.lm)
 
     # train and evaluate the model
-    train(train_dataset,
+    if hp.neural=='linear':
+        train_original(train_dataset,
           valid_dataset,
           test_dataset,
           run_tag, hp)
+    elif hp.model=='cls_sep':
+        train_cls_sep(train_dataset,
+          valid_dataset,
+          test_dataset,
+          run_tag, hp)
+    elif hp.model=='cls_sep_gru':
+        train_cls_sep_gru(train_dataset,
+          valid_dataset,
+          test_dataset,
+          run_tag, hp)
+    elif hp.model=='gru':
+        train_gru(train_dataset,
+          valid_dataset,
+          test_dataset,
+          run_tag, hp)
+    elif hp.model=='lstm':
+        train_lstm(train_dataset,
+          valid_dataset,
+          test_dataset,
+          run_tag, hp)
+    else:
+        raise ValueError("Wrong model architecture.\nInsert neural parameter one of the following:\n1: linear\n2: cls_sep\n3: cls_sep_gru\n4: gru\n5:lstm")
+    
