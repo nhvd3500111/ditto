@@ -30,7 +30,7 @@ class RNN(nn.Module):
     
     def forward(self, x):
         # Set initial hidden and cell states 
-        h0 = torch.zeros(2*self.num_layers, x.size(0), self.hidden_size,dtype=torch.float16).to('cuda') 
+        h0 = torch.zeros(2*self.num_layers, x.size(0), self.hidden_size).to('cuda') 
         #since we have a biderictional gru, hidden  should have the double dimension of the gru layers as the first dimension
         # Morevoer there will be half precision floats since we use fp 16 optimization
         # Forward propagate gru
@@ -89,7 +89,7 @@ class DittoModel(nn.Module):
         enc=torch.reshape(enc, (enc.shape[0],1, enc.shape[1])) #We want it to match with the 3-d array input of the gru- so we put 
         #batch first , one then (since we take only the CLS token) and then the length of the representation of the bert model
         
-        enc=enc.type(torch.float)
+
         return self.fc(enc) # .squeeze() # .sigmoid()
 
 
