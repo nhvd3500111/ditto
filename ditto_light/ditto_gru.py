@@ -90,7 +90,7 @@ class DittoModel(nn.Module):
         #batch first , one then (since we take only the CLS token) and then the length of the representation of the bert model
         
         enc=enc.type(torch.float())
-        reeturn self.fc(enc) # .squeeze() # .sigmoid()
+        return self.fc(enc) # .squeeze() # .sigmoid()
 
 
 def evaluate(model, iterator, threshold=None):
