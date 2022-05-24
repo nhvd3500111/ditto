@@ -89,8 +89,8 @@ class DittoModel(nn.Module):
         enc=torch.reshape(enc, (enc.shape[0],1, enc.shape[1])) #We want it to match with the 3-d array input of the gru- so we put 
         #batch first , one then (since we take only the CLS token) and then the length of the representation of the bert model
         
-
-        return self.fc(enc) # .squeeze() # .sigmoid()
+        enc=enc.type(torch.float())
+        reeturn self.fc(enc) # .squeeze() # .sigmoid()
 
 
 def evaluate(model, iterator, threshold=None):
