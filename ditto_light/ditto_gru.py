@@ -72,9 +72,11 @@ class DittoModel(nn.Module):
             Tensor: binary prediction
         """
         x1 = x1.to(self.device) # (batch_size, seq_len)
+        x1=x1.type(torch.DoubleTensor)
         if x2 is not None:
             # MixDA
             x2 = x2.to(self.device) # (batch_size, seq_len)
+            x2=x2.type(torch.DoubleTensor)
             enc = self.bert(torch.cat((x1, x2)))[0][:, 0, :]
             batch_size = len(x1)
             enc1 = enc[:batch_size] # (batch_size, emb_size)
