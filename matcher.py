@@ -336,7 +336,7 @@ def update_excel(file_excel):
         df2={'Model_Architecture':hp.neural,'Model_Name':hp.task,'F1_Testset': round(real_f1, 4),
         'Optimizations':'da: '+str(hp.da)+' - dk: '+str(hp.dk)+' - summarize: '+str(hp.summarize),
         'FP':FPP,'LM':str(hp.lm)} 
-        
+        df=df.append(df2, ignore_index=True)
         df.to_excel(file_excel,index=False)  
 
 if __name__ == "__main__":
