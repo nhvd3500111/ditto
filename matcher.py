@@ -328,9 +328,15 @@ def update_excel(file_excel):
         df=pd.read_excel(file_excel)
         #We store the basic architecture of the matcher in a dataframe, as well as the results in the test dataset,
         #in order to update our excel file where we keep track of the results
+        if hp.fp16:
+            FPP='FP-16'
+        else:
+            FPP='FP-32'
+        
         df2={'Model_Architecture':hp.neural,'Model_Name':hp.task,'F1_Testset': round(real_f1, 4),
-        'Optimizations':'da: '+str(hp.da)+' - dk: '+str(hp.dk)+' - summarize: '+str(hp.summarize)} 
-        df = df.append(df2, ignore_index = True)
+        'Optimizations':'da: '+str(hp.da)+' - dk: '+str(hp.dk)+' - summarize: '+str(hp.summarize),
+        'FP':FPP,'LM':str(hp.lm)} 
+        
         df.to_excel(file_excel,index=False)  
 
 if __name__ == "__main__":
