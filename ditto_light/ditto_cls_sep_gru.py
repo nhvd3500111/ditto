@@ -96,16 +96,17 @@ class DittoModel(nn.Module):
              prediction
         """
         def mapping(x):
-            map_x=torch.torch.zeros_like(x).float()
+            if self.fp16:
+                map_x=torch.torch.zeros_like(x).long()
+            else: 
+                map_x=torch.torch.zeros_like(x).float()
             map_x = map_x.to(self.device)
             map_x=torch.where(x==self.sep_token_id,1,map_x) #(batch_size,emb_size)
             map_x=torch.reshape(map_x,(map_x.shape[0],1,map_x.shape[1])) #(batch_size,1,emb_size)
             if self.fp16:
-                return map_x.type(torch.cuda.HalfTensor)#We have to modify map_x tensr's type to halftensor (float16), since 
+                map_x= map_x.type(torch.cuda.HalfTensor)#We have to modify map_x tensor's type to halftensor (float16), since 
                 #ditto will be trained with fp16 optimization module on
-            else:
-                return map_x
-        
+            return map_x
         batch_size = len(x1)
         x1 = x1.to(self.device) # (batch_size, seq_len)
         map_x1=mapping(x1)
