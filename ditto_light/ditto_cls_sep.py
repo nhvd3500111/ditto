@@ -74,9 +74,12 @@ class DittoModel(nn.Module):
         def mapping(x):
             if self.fp16:
                 map_x=torch.torch.zeros_like(x).long()
+                map_x = map_x.to(self.device)
             else: 
-                map_x=torch.torch.zeros_like(x).long()
-            map_x = map_x.to(self.device)
+                map_x=torch.torch.zeros_like(x).float()
+                map_x = map_x.to(self.device)
+                map_x=map_x.type(torch.cuda.FloatTensor)
+            
             map_x=torch.where(x==self.sep_token_id,1,map_x) #(batch_size,emb_size)
             map_x=torch.reshape(map_x,(map_x.shape[0],1,map_x.shape[1])) #(batch_size,1,emb_size)
             if self.fp16:
