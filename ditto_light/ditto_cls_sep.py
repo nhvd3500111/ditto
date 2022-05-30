@@ -39,7 +39,7 @@ def get_tokenizer(lm):
 class DittoModel(nn.Module):
     """A baseline model for EM."""
 
-    def __init__(self, device='cuda', lm='roberta', alpha_aug=0.8):
+    def __init__(self, device='cuda', lm='roberta', alpha_aug=0.8,fp16=True):
         super().__init__()
         if lm in lm_mp:
             self.bert = AutoModel.from_pretrained(lm_mp[lm])
@@ -48,7 +48,7 @@ class DittoModel(nn.Module):
 
         self.device = device
         self.alpha_aug = alpha_aug
-
+        self.fp16=fp16
         
         #linear layer
         
@@ -75,8 +75,12 @@ class DittoModel(nn.Module):
             map_x = map_x.to(self.device)
             map_x=torch.where(x==self.sep_token_id,1,map_x) #(batch_size,emb_size)
             map_x=torch.reshape(map_x,(map_x.shape[0],1,map_x.shape[1])) #(batch_size,1,emb_size)
-            return map_x.type(torch.cuda.HalfTensor) #We have to modify map_x tensr's type to halftensor (float16), since 
-            #ditto will be trained with fp16 optimization module on
+            if self.fp16:
+                return map_x.type(torch.cuda.HalfTensor) #We have to modify map_x tensr's type to halftensor (float16), since 
+                #ditto will be trained with fp16 optimization module on
+            else:
+                return map_x
+
         
         batch_size = len(x1)
         x1 = x1.to(self.device) # (batch_size, seq_len)
