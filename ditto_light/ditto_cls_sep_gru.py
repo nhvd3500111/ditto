@@ -96,7 +96,7 @@ class DittoModel(nn.Module):
              prediction
         """
         def mapping(x):
-            map_x=torch.torch.zeros_like(x).long()
+            map_x=torch.torch.zeros_like(x).float()
             map_x = map_x.to(self.device)
             map_x=torch.where(x==self.sep_token_id,1,map_x) #(batch_size,emb_size)
             map_x=torch.reshape(map_x,(map_x.shape[0],1,map_x.shape[1])) #(batch_size,1,emb_size)
