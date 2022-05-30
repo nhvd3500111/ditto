@@ -302,7 +302,7 @@ def load_model(task, path, lm, use_gpu, fp16=True):
         device = 'cpu'
 
     if hp.neural=='linear':
-        model = DittoModel_original(device=device, lm=lm,fp16=fp16)
+        model = DittoModel_original(device=device, lm=lm)
     elif hp.neural=='cls_sep':
         model = DittoModel_cls_sep(device=device, lm=lm,fp16=fp16)
     elif hp.neural=='cls_sep_gru':
