@@ -75,7 +75,7 @@ class DittoModel(nn.Module):
 
         self.device = device
         self.alpha_aug = alpha_aug
-
+        self.fp16=fp16
         
         input_size = self.bert.config.hidden_size
         #gru layer
