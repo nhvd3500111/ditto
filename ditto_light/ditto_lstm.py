@@ -51,7 +51,7 @@ class RNN(nn.Module):
 class DittoModel(nn.Module):
     """A baseline model for EM."""
 
-    def __init__(self, device='cuda', lm='roberta', alpha_aug=0.8):
+    def __init__(self, device='cuda', lm='roberta', alpha_aug=0.8,fp16=True):
         super().__init__()
         if lm in lm_mp:
             self.bert = AutoModel.from_pretrained(lm_mp[lm])
@@ -64,7 +64,7 @@ class DittoModel(nn.Module):
         
         input_size = self.bert.config.hidden_size
         #LSTM layer
-        self.fc=RNN(input_size,128,3,2) 
+        self.fc=RNN(input_size,128,3,2,fp16) 
 
 
     def forward(self, x1, x2=None):
