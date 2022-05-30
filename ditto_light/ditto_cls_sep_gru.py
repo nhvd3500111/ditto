@@ -36,20 +36,24 @@ def get_tokenizer(lm):
 
 
 class RNN(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, num_classes):
+    def __init__(self, input_size, hidden_size, num_layers, num_classes,fp16):
         super(RNN, self).__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers
         self.gru = nn.GRU(2*input_size, hidden_size, num_layers, batch_first=True,dropout=0.20,bidirectional=True)
+        self.fp16=fp16
         #now we insert 2* input size because each element of the batch will be inserted to the gru
         #with double representation - explained below
         self.fc = nn.Linear(2*hidden_size, num_classes)
     
     def forward(self, x):
         # Set initial hidden and cell states 
-        h0 = torch.zeros(2*self.num_layers, x.size(0), self.hidden_size,dtype=torch.float16).to('cuda') 
+        if self.fp16:
+            h0 = torch.zeros(2*self.num_layers, x.size(0), self.hidden_size,dtype=torch.float16).to('cuda') 
         #since we have a biderictional gru, hidden  should have the double dimension of the gru layers as the first dimension
         # Morevoer we will use half precision floats since we implement fp 16 optimization
+        else:
+            h0 = torch.zeros(2*self.num_layers, x.size(0), self.hidden_size).to('cuda') 
         # Forward propagate gru
         out, _ = self.gru(x, h0)  # out: tensor of shape (batch_size, seq_length, hidden_size)
         
@@ -62,7 +66,7 @@ class RNN(nn.Module):
 class DittoModel(nn.Module):
     """A baseline model for EM."""
 
-    def __init__(self, device='cuda', lm='roberta', alpha_aug=0.8):
+    def __init__(self, device='cuda', lm='roberta', alpha_aug=0.8,fp16=True):
         super().__init__()
         if lm in lm_mp:
             self.bert = AutoModel.from_pretrained(lm_mp[lm])
@@ -75,7 +79,7 @@ class DittoModel(nn.Module):
         
         input_size = self.bert.config.hidden_size
         #gru layer
-        self.fc=RNN(input_size,128,1,2) 
+        self.fc=RNN(input_size,128,1,2,fp16) 
         self.tokenizer=get_tokenizer(lm)
         self.sep_token_id=self.tokenizer.sep_token_id
 
@@ -96,8 +100,11 @@ class DittoModel(nn.Module):
             map_x = map_x.to(self.device)
             map_x=torch.where(x==self.sep_token_id,1,map_x) #(batch_size,emb_size)
             map_x=torch.reshape(map_x,(map_x.shape[0],1,map_x.shape[1])) #(batch_size,1,emb_size)
-            return map_x.type(torch.cuda.HalfTensor)#We have to modify map_x tensr's type to halftensor (float16), since 
-            #ditto will be trained with fp16 optimization module on
+            if self.fp16:
+                return map_x.type(torch.cuda.HalfTensor)#We have to modify map_x tensr's type to halftensor (float16), since 
+                #ditto will be trained with fp16 optimization module on
+            else:
+                return map_x
         
         batch_size = len(x1)
         x1 = x1.to(self.device) # (batch_size, seq_len)
@@ -261,7 +268,7 @@ def train(trainset, validset, testset, run_tag, hp):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = DittoModel(device=device,
                        lm=hp.lm,
-                       alpha_aug=hp.alpha_aug)
+                       alpha_aug=hp.alpha_aug,fp16=hp.fp16)
     model = model.cuda()
     optimizer = AdamW(model.parameters(), lr=hp.lr)
 
