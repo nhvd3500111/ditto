@@ -17,23 +17,16 @@ from transformers import AutoModel, AdamW, get_linear_schedule_with_warmup
 from tensorboardX import SummaryWriter
 from apex import amp
 
-
-
-
 # map lm name to huggingface's pre-trained model names
 lm_mp = {'roberta': 'roberta-base',
          'distilbert': 'distilbert-base-uncased'}
+
 
 def get_tokenizer(lm):
     if lm in lm_mp:
         return AutoTokenizer.from_pretrained(lm_mp[lm])
     else:
         return AutoTokenizer.from_pretrained(lm)
-
-
-
-
-
 
 
 class DittoModel(nn.Module):
@@ -58,7 +51,6 @@ class DittoModel(nn.Module):
         hidden_size = self.bert.config.hidden_size
         self.fc = torch.nn.Linear(2*hidden_size, 2)
 
-
     def forward(self, x1, x2=None):
         """Encode the left, right, and the concatenation of left+right.
 
@@ -82,11 +74,7 @@ class DittoModel(nn.Module):
             else:
                 map_x=map_x.type(torch.cuda.FloatTensor)
             return map_x
-        batch_size = len(x1)
-        x1 = x1.to(self.device) # (batch_size, seq_len)
-        map_x1=mapping(x1)
 
-        
         batch_size = len(x1)
         x1 = x1.to(self.device) # (batch_size, seq_len)
         map_x1=mapping(x1)
@@ -125,7 +113,6 @@ class DittoModel(nn.Module):
             enc=torch.cat((enc,enc_new),dim=2) # (batch_size,1, 2*emb_size)
             enc = torch.reshape(enc,(enc.shape[0],enc.shape[2]))   # (batch_size, 2*emb_size)
         
-
         return self.fc(enc) # .squeeze() # .sigmoid()
 
 
