@@ -31,10 +31,6 @@ def get_tokenizer(lm):
     else:
         return AutoTokenizer.from_pretrained(lm)
 
-
-
-
-
 class RNN(nn.Module):
     def __init__(self, input_size, hidden_size, num_layers, num_classes,fp16):
         super(RNN, self).__init__()
@@ -60,8 +56,6 @@ class RNN(nn.Module):
         # Decode the hidden state of the last time step
         out = self.fc(out[:, -1, :])
         return out
-
-
 
 class DittoModel(nn.Module):
     """A baseline model for EM."""
@@ -106,6 +100,7 @@ class DittoModel(nn.Module):
             else:
                 map_x=map_x.type(torch.cuda.FloatTensor)
             return map_x
+
         batch_size = len(x1)
         x1 = x1.to(self.device) # (batch_size, seq_len)
         map_x1=mapping(x1)
@@ -116,14 +111,12 @@ class DittoModel(nn.Module):
             map_x2=mapping(x2)
             
             enc = self.bert(torch.cat((x1, x2)))[0] #(2*batch_size,seq_len,emb_size)
-            
            
             enc1_new = enc[:batch_size] # (batch_size,seq_len, emb_size)
             enc2_new = enc[batch_size:] # (batch_size, seq_len, emb_size)
             enc1_new=torch.matmul(map_x1,enc1_new) # (batch_size,1, emb_size)
             enc2_new=torch.matmul(map_x2,enc2_new) # (batch_size,1, emb_size)
-
-
+            
             enc_old =enc[:, 0, :]
             batch_size = len(x1)
             enc1_old = enc_old[:batch_size] # (batch_size, emb_size)
@@ -145,11 +138,8 @@ class DittoModel(nn.Module):
             enc = enc[:,0,:] # (batch_size, emb_size)
             enc = torch.reshape(enc,(enc.shape[0],1,enc.shape[1])) # (batch_size,1, emb_size)
             enc=torch.cat((enc,enc_new),dim=2) # (batch_size,1, 2*emb_size)
-        
-        
 
         return self.fc(enc) # .squeeze() # .sigmoid()
-
 
 def evaluate(model, iterator, threshold=None):
     """Evaluate a model on a validation/test dataset
