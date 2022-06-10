@@ -324,8 +324,10 @@ def load_model(task, path, lm, use_gpu, fp16=True):
     return config, model
 
 def update_excel(file_excel):
+
         #hp, real_f1 will be  global variables so no need to feed them to the function
         df=pd.read_excel(file_excel)
+        
         #We store the basic architecture of the matcher in a dataframe, as well as the results in the test dataset,
         #in order to update our excel file where we keep track of the results
         if hp.fp16:
@@ -333,7 +335,7 @@ def update_excel(file_excel):
         else:
             FPP='FP-32'
         
-        df2={'Model_Architecture':hp.neural,'Model_Name':hp.task,'F1_Testset': round(real_f1, 4),
+        df2={'Dataset':hp.neural,'Run_id':hp.run_id,'Model_Name':hp.task,'F1_Testset': round(real_f1, 4),
         'Optimizations':'da: '+str(hp.da)+' - dk: '+str(hp.dk)+' - summarize: '+str(hp.summarize),
         'FP':FPP,'LM':str(hp.lm)} 
         df=df.append(df2, ignore_index=True)
@@ -354,6 +356,7 @@ if __name__ == "__main__":
     parser.add_argument("--max_len", type=int, default=256)
     parser.add_argument("--neural", type=str, default='linear')
     parser.add_argument("--file_excel", type=str, default='F1_SCORES.xlsx')
+    parser.add_argument("--run_id", type=int, default=0) # just for storing purposes
     hp = parser.parse_args()
 
     # load the models
