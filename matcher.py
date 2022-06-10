@@ -335,11 +335,11 @@ def update_excel(file_excel):
         else:
             FPP='FP-32'
         
-        df2={'Dataset':hp.neural,'Run_id':hp.run_id,'Model_Name':hp.task,'F1_Testset': round(real_f1, 4),
+        df2={'Dataset':hp.task,'Run_id':hp.run_id,'F1_Testset': round(real_f1, 4),
         'Optimizations':'da: '+str(hp.da)+' - dk: '+str(hp.dk)+' - summarize: '+str(hp.summarize),
-        'FP':FPP,'LM':str(hp.lm)} 
+        'FP':FPP,'LM':str(hp.lm),'Model_Architecture':hp.neural} 
         df=df.append(df2, ignore_index=True)
-        df.to_excel(file_excel,index=False)  
+        df.to_excel(file_excel,index=False)   
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
