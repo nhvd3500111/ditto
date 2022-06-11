@@ -308,6 +308,13 @@ if __name__ == "__main__":
     parser.add_argument("--summarize", dest="summarize", action="store_true")
     parser.add_argument("--max_len", type=int, default=256)
     hp = parser.parse_args()
+    
+    # The two following if statements facilitate the multiple execution of matcher in for loops 
+    # (when passing None as an argument it transforms it to string, but we want it to be None not "None")
+    if hp.dk=="None":
+        hp.dk=None
+    if hp.da=="None":
+        hp.da=None
 
     # load the models
     set_seed(123)
