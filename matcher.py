@@ -359,7 +359,7 @@ if __name__ == "__main__":
     parser.add_argument("--run_id", type=int, default=0) # just for storing purposes
     hp = parser.parse_args()
     
-    # The following two if statements facilitate the multiple execution of train_ditto in for loops 
+    # The two following  if statements facilitate the multiple execution of train_ditto in for loops 
     # (when passing None as an argument it transforms it to string, we want it to be None not "None")
     if hp.dk=="None":
         hp.dk=None
