@@ -338,6 +338,11 @@ def update_excel(file_excel):
         df2={'Dataset':hp.task,'Run_id':hp.run_id,'F1_Testset': round(real_f1, 4),
         'Optimizations':'da: '+str(hp.da)+' - dk: '+str(hp.dk)+' - summarize: '+str(hp.summarize),
         'FP':FPP,'LM':str(hp.lm),'Model_Architecture':hp.neural} 
+        
+        #If the user provided training time as input, we will add it to the excel_file
+        if hp.time_trained>0:
+            df2['Train_time]= hp.time_trained
+                
         df=df.append(df2, ignore_index=True)
         df.to_excel(file_excel,index=False)   
 
@@ -357,6 +362,7 @@ if __name__ == "__main__":
     parser.add_argument("--neural", type=str, default='linear')
     parser.add_argument("--file_excel", type=str, default='F1_SCORES.xlsx')
     parser.add_argument("--run_id", type=int, default=0) # just for storing purposes
+    parser.add_argument("--time_trained", type=float, default=0) # it receives that as input from the training time that was calculated when train_ditto was executed
     hp = parser.parse_args()
     
     # The two following  if statements facilitate the multiple execution of train_ditto in for loops 
