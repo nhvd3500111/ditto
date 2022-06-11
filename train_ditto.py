@@ -40,12 +40,14 @@ if __name__=="__main__":
 
     hp = parser.parse_args()
     
-    # The two following if statements facilitate the multiple execution of train_ditto in for loops 
+    # The three following if statements facilitate the multiple execution of train_ditto in for loops 
     # (when passing None as an argument it transforms it to string, we want it to be None not "None")
     if hp.dk=="None":
         hp.dk=None
     if hp.da=="None":
         hp.da=None
+    if hp.size=="None":
+        hp.size=None
 
     # set seeds
     seed = hp.run_id
