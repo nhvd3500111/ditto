@@ -39,6 +39,15 @@ if __name__=="__main__":
     parser.add_argument("--neural", type=str, default='linear')
 
     hp = parser.parse_args()
+    
+    # The three following if statements facilitate the multiple execution of train_ditto in for loops 
+    # (when passing None as an argument it transforms it to string, we want it to be None not "None")
+    if hp.dk=="None":
+        hp.dk=None
+    if hp.summarize=="None":
+        hp.summarize=None
+    if hp.da=="None":
+        hp.da=None
 
     # set seeds
     seed = hp.run_id
