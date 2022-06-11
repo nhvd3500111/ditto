@@ -358,6 +358,13 @@ if __name__ == "__main__":
     parser.add_argument("--file_excel", type=str, default='F1_SCORES.xlsx')
     parser.add_argument("--run_id", type=int, default=0) # just for storing purposes
     hp = parser.parse_args()
+    
+    # The following two if statements facilitate the multiple execution of train_ditto in for loops 
+    # (when passing None as an argument it transforms it to string, we want it to be None not "None")
+    if hp.dk=="None":
+        hp.dk=None
+    if hp.da=="None":
+        hp.da=None
 
     # load the models
     set_seed(123)
