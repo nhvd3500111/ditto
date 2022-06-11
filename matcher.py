@@ -341,7 +341,7 @@ def update_excel(file_excel):
         
         #If the user provided training time as input, we will add it to the excel_file
         if hp.time_trained>0:
-            df2['Train_time]= hp.time_trained
+            df2['Train_time']= hp.time_trained
                 
         df=df.append(df2, ignore_index=True)
         df.to_excel(file_excel,index=False)   
