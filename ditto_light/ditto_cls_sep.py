@@ -49,6 +49,8 @@ class DittoModel(nn.Module):
         self.sep_token_id=self.tokenizer.sep_token_id
 
         hidden_size = self.bert.config.hidden_size
+
+        #2* hidden size input because now the representation will include both CLS and SEP token, and will be double - sized
         self.fc = torch.nn.Linear(2*hidden_size, 2)
 
     def forward(self, x1, x2=None):
