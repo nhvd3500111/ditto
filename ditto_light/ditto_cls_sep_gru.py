@@ -36,10 +36,13 @@ class RNN(nn.Module):
         super(RNN, self).__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers
+       
+        #Look out. Here the gru will be fed with a representation sized twice the output of the pretrained language model. That is, because we will creaet a representation
+        #that will include the info from both the CLS and the SEP token (For further info check the forward function of class DittoModel)
         self.gru = nn.GRU(2*input_size, hidden_size, num_layers, batch_first=True,dropout=0.20,bidirectional=True)
         self.fp16=fp16
-        #now we insert 2* input size because each element of the batch will be inserted to the gru
-        #with double representation - explained below
+
+        #2*hidden size due to biderictionality of the GRU
         self.fc = nn.Linear(2*hidden_size, num_classes)
     
     def forward(self, x):
