@@ -27,6 +27,8 @@ class RNN(nn.Module):
         self.num_layers = num_layers
         self.fp16=fp16
         self.gru = nn.GRU(input_size, hidden_size, num_layers, batch_first=True,dropout=0.20,bidirectional=True)
+
+        #2*hidden size due to biderictionality of the GRU
         self.fc = nn.Linear(2*hidden_size, num_classes)
     
     def forward(self, x):
