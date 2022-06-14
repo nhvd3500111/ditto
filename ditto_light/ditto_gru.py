@@ -75,10 +75,14 @@ class DittoModel(nn.Module):
             Tensor: binary prediction
         """
         x1 = x1.to(self.device) # (batch_size, seq_len)
+        print ("x1 shape is: ",x1.shape)
         if x2 is not None:
             # MixDA
             x2 = x2.to(self.device) # (batch_size, seq_len)
-            enc = self.bert(torch.cat((x1, x2)))[0][:, 0, :]
+            print ("x2 shape is: ",x2.shape)
+            enc = self.bert(torch.cat((x1, x2)))[0]
+            print ("Enc original shape is: ",enc.shape)
+            enc = enc[:, 0, :]
             batch_size = len(x1)
             enc1 = enc[:batch_size] # (batch_size, emb_size)
             enc2 = enc[batch_size:] # (batch_size, emb_size)
