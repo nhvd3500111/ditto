@@ -89,7 +89,7 @@ class DittoModel(nn.Module):
         else:
             enc = self.bert(x1)[0][:, 0, :]
         
-        #A necessary 3-d reshape to fit the input requirement of the GRU
+        #A necessary 3-d reshape to match the input requirement of the GRU
         enc=torch.reshape(enc, (enc.shape[0],1, enc.shape[1])) 
     
         return self.fc(enc) # .squeeze() # .sigmoid()
