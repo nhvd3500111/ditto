@@ -87,7 +87,7 @@ class DittoModel(nn.Module):
             aug_lam = np.random.beta(self.alpha_aug, self.alpha_aug)
             enc = enc1 * aug_lam + enc2 * (1.0 - aug_lam)
         else:
-            print (x1 shape is: ',x1.shape)
+            print ('x1 shape is: ',x1.shape)
             enc = self.bert(x1)[0]
             print ('enc shape is: ',enc.shape)
       
