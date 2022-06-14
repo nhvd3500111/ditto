@@ -72,7 +72,7 @@ class DittoDataset(data.Dataset):
         x = self.tokenizer.encode(text=left,
                                   text_pair=right,
                                   max_length=self.max_len,
-                                  truncation=True,padding=''max_length')
+                                  truncation=True,padding='max_length')
 
         # augment if da is set
         if self.da is not None:
@@ -81,7 +81,7 @@ class DittoDataset(data.Dataset):
             x_aug = self.tokenizer.encode(text=left,
                                       text_pair=right,
                                       max_length=self.max_len,
-                                      truncation=True,padding=''max_length')
+                                      truncation=True,padding='max_length')
             return x, x_aug, self.labels[idx]
         else:
             return x, self.labels[idx]
