@@ -26,7 +26,7 @@ class RNN(nn.Module):
         self.hidden_size = hidden_size
         self.num_layers = num_layers
         self.fp16=fp16
-        self.gru = nn.GRU(input_size, hidden_size, num_layers, batch_first=True,dropout=0.20,bidirectional=True)
+        self.gru = nn.GRU(input_size, hidden_size, num_layers, batch_first=True,bidirectional=True)
 
         #2*hidden size due to biderictionality of the GRU
         self.fc = nn.Linear(2*hidden_size, num_classes)
@@ -88,7 +88,6 @@ class DittoModel(nn.Module):
             enc = enc1 * aug_lam + enc2 * (1.0 - aug_lam)
         else:
             enc = self.bert(x1)[0]
-            print ("Enc original shape is: ",enc.shape)
       
         '''enc shape : (batch size,sequence len , embeddings representation) 
         (in our case squence len will be the max len input in the program, and embeddings representation will be 768 since it's the same for both 
