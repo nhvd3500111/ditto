@@ -75,27 +75,24 @@ class DittoModel(nn.Module):
             Tensor: binary prediction
         """
         x1 = x1.to(self.device) # (batch_size, seq_len)
-        print ("x1 shape is: ",x1.shape)
         if x2 is not None:
             # MixDA
             x2 = x2.to(self.device) # (batch_size, seq_len)
-            print ("x2 shape is: ",x2.shape)
             enc = self.bert(torch.cat((x1, x2)))[0]
-            print ("Enc original shape is: ",enc.shape)
-            #enc = enc[:, 0, :]
+                  
             batch_size = len(x1)
             enc1 = enc[:batch_size] # (batch_size, emb_size)
             enc2 = enc[batch_size:] # (batch_size, emb_size)
 
             aug_lam = np.random.beta(self.alpha_aug, self.alpha_aug)
             enc = enc1 * aug_lam + enc2 * (1.0 - aug_lam)
-            print ("Enc original shape is: ",enc.shape)
         else:
             enc = self.bert(x1)[0]
             print ("Enc original shape is: ",enc.shape)
       
-        enc=torch.reshape(enc, (enc.shape[0],1, enc.shape[1])) #We want it to match with the 3-d array input of the gru- so we put 
-        #batch first , one then (since we take only the CLS token) and then the length of the representation of the bert model
+        '''enc shape : (batch size,sequence len , embeddings representation) 
+        (in our case squence len will be the max len input in the program, and embeddings representation will be 768 since it's the same for both 
+        roberta and distilbert that our program supports)'''
         
         return self.fc(enc) # .squeeze() # .sigmoid()
 
