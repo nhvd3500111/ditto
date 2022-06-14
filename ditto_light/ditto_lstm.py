@@ -91,9 +91,8 @@ class DittoModel(nn.Module):
         else:
             enc = self.bert(x1)[0][:, 0, :]
         
-
-        enc=torch.reshape(enc, (enc.shape[0],1, enc.shape[1])) #We want it to match with the 3-d array input of the LSTM- so we put 
-        #batch first , one then (since we take only the CLS token) and then the length of the representation of the bert model
+        #A necessary 3-d reshape to match the input requirement of the LSTM
+        enc=torch.reshape(enc, (enc.shape[0],1, enc.shape[1]))
         
         return self.fc(enc) # .squeeze() # .sigmoid()
 
