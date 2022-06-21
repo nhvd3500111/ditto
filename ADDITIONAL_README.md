@@ -27,7 +27,7 @@ All the results from the matcher are saved in an .xlsx file in this repo's main 
 
 So feel free to experiment and do not hesitate to ask me anything you want regarding my modifications on **cv13805@di.uoa.gr**. 
 
-**(P.S.: A big thank you to the authors of DITTO for their robust work is more than necessary)**
+**(P.S.: A big thank you to the authors of DITTO for their robust work and thorough explanations is more than necessary)**
 
 
 
