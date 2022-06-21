@@ -29,7 +29,7 @@ As mentioned before, the results from my experiments are stored in the results d
 
 So feel free to experiment and do not hesitate to ask me anything you want regarding my modifications on **cv13805@di.uoa.gr**. 
 
-**(P.S.: A big thank you to the authors of DITTO for their robust work and thorough explanations is more than necessary)**
+**(P.S.: A big thank you to the authors of DITTO for their robust work and their thorough explanations is more than necessary)**
 
 
 
