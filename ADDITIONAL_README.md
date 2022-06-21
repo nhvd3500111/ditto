@@ -19,7 +19,7 @@ If executed from scratch, these two notebooks will produce the .xlsx files store
 
 Please always have a CUDA enabled when executing these notebooks, and do not infuse GENERAL DK as the DK argument when training, because of the reasons I explain in my report.
 
-To select one of the five architectures available for training DITTO, please provide the appropriate input for **neural argument**, when executing both train_ditto.py and matcher.py. **Moreover, you always have to provide the same arguments' inputs both for train_ditto.py and matcher.py.**
+To select one of the five architectures available for training DITTO, please provide the appropriate input for **neural argument**, when executing both train_ditto.py and matcher.py. The available input options for that argument are one of : [linear,cls_sep,gru,cls_sep_gru,lstm] (linear stands for the original proposal of the authors and the other four are the architectures that I introduced).**Moreover, you always have to provide the same arguments' inputs both for train_ditto.py and matcher.py.**
 
 Matcher.py is modified to print the result of the produced model (by train_ditto.py) on the respective testset of the Dataset provided. I have forked all the datasets the DITTO authors offered, so there is a wide range of choices to experiment with. 
 
