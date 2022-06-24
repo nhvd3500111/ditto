@@ -15,7 +15,7 @@ This repo is a fork of the Original DITTO repository (https://github.com/megagon
 Suppose you want to execute the new DITTO with my proposed modifications; you can execute either **multiple_ditto_light_colab.ipynb** on Google Colab, or **multiple_ditto_light_kaggle.ipynb** on Kaggle, depending on whether you want to enable the FP16 optimization or not.
 
 
-If executed from scratch, these two notebooks will update the .xlsx files **(FINAL_F1_SCORES.xlsx and FINAL_F1_SCORES_FP16.xlsx which are files including only column names and empty rows**) stored in the results directory of this forked repo, depending on the dataset and the arguements provided. Of course, if the user wants to exploit the data produced by the execution, they have to download these files from either Colab's or Kaggle's working directories. 
+If executed from scratch, these two notebooks will conduct experiments on DITTO with various parameters, **by constantly executing my proposed versions of train_ditto.py and matcher.py**.Thus, this will update the .xlsx files **(FINAL_F1_SCORES.xlsx and FINAL_F1_SCORES_FP16.xlsx which are files including only column names and empty rows**) stored in the results directory of this forked repo, depending on the dataset and the arguements provided. Of course, if the user wants to exploit the data produced by the execution, they have to download these files from either Colab's or Kaggle's working directories. 
 
 Please always have a CUDA enabled when executing these notebooks, and do not infuse GENERAL DK as the DK argument when training, because of the reasons I explain in my report.
 
