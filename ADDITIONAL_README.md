@@ -25,7 +25,7 @@ Matcher.py is modified to print the result of the produced model (by train_ditto
 
 All the results from the matcher are saved in an .xlsx file in this repo's main directory. In this case, it is either F1_SCORES_FP16.xlsx or F1_SCORES.xlsx, depending on whether you have enabled FP16 optimization. The name of the .xlsx file is an input argument for matcher.py, and it must be a file stored in the same directory as the one where matcher.py is stored (in our case this is the main directory of the repo).
 
-As mentioned before, the results from my experiments are stored in the results directory. There is also a .ipynb file saved in that directory, which serves as a mini report for the results earned from my experiments.  
+As mentioned before, I have stored the .xlsx files produced from my experimens into the results directory. There is also a .ipynb file saved in that directory, which serves as a mini report for the results earned from my experiments.  
 
 So feel free to experiment and do not hesitate to ask me anything you want regarding my modifications on **cv13805@di.uoa.gr**. 
 
