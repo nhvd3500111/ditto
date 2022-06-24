@@ -10,7 +10,7 @@ Moreover, please read my report, which is uploaded in this repo and stored in it
 -----------------------------------------------------------------------------------------------------------------------------
 
 This repo is a fork of the Original DITTO repository (https://github.com/megagonlabs/ditto). It aims to modify DITTO's original architecture regarding the Matcher and propose four alternative model structures. These models are deployed in four newly created .py files that are stored in ditto_light directory (feel free to compare them to the original ditto.py file). These files are 
-**ditto_cls_sep_gru.py, ditto_gru.py , ditto_lstm.py and ditto_cls_sep.py.**. ditto_original.py is the same file as ditto.py in the original repo, with some minor modifications. 
+**ditto_cls_sep_gru.py, ditto_gru.py , ditto_lstm.py and ditto_cls_sep.py.**. ditto_original.py is almost the same file as ditto.py in the original repo, with some minor modifications. 
 
 Suppose you want to execute the new DITTO with my proposed modifications; you can execute either **multiple_ditto_light_colab.ipynb** on Google Colab, or **multiple_ditto_light_kaggle.ipynb** on Kaggle, depending on whether you want to enable the FP16 optimization or not.
 
