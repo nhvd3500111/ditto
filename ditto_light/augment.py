@@ -226,13 +226,8 @@ class Augmenter(object):
             for op in random.choices(ops, k=N):
                 tokens, labels = self.augment(tokens, labels, op=op)
         else:
-            print('Tokens Before: ',tokens,'\n')
-            print('Labels Before: ',labels,'\n')
             tokens, labels = self.augment(tokens, labels, op=op)
-            print('Tokens after: ',tokens,'\n')
-            print('Labels after: ',labels,'\n')
         results = ' '.join(tokens)
-        print('results: ',results,'\n')
         return results
 
     def sample_span(self, tokens, labels, span_len=3):
